@@ -1,0 +1,24 @@
+# This action is centrally managed in https://github.com/ridderne/.github/
+# Don't make changes to this file outside of the .github repository!
+# Files will get overwritten with changes made to the same file in the above mentioned repository.
+
+name: Deploy to One.com
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    build:
+        if: "github.event.repository.name != '.github' && github.event.repository.name != 'ridderne-template' && !contains(github.event.head_commit.message, '[skip deploy]') && !contains(github.event.head_commit.message, '[skip-deploy]')"
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: GitHub Deploy to One.com
+              uses: rostimelk/one.com-deployer@master
+              env:
+                  ONE_DOMAIN_NAME: ${{ github.event.repository.name }}
+                  ONE_SSH_KEY_PUBLIC: ${{ secrets.PUBLIC_KEY_NAME }}
+                  ONE_SSH_KEY_PRIVATE: ${{ secrets.PRIVATE_KEY_NAME }}
